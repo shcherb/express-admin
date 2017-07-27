@@ -15,11 +15,37 @@ exports.status = function (req, res, next) {
 }
 
 exports.restrict = function (req, res, next) {
-    if (res.locals._admin.debug) return next();
+	if (res.locals._admin.debug) return next();
 
-    if (req.session.user) return next();
-    req.session.error = res.locals.string['access-denied'];
-    res.redirect(res.locals.root+'/login');
+	if (req.isAuthenticated()) {
+		let name = res.locals._admin.slugs[req.params[0]];
+		if (!req.params[0] || !name) return next()
+		let dbClient = res.locals._admin.db.client,
+			userId = req.session.passport.user,
+			sql = `
+                SELECT tables.name, tables.view, accounts.admin
+		        FROM tables INNER JOIN account_tables ON (tables.id = account_tables.table_id) LEFT JOIN accounts ON (account_tables.account_id = accounts.id)
+                WHERE account_tables.account_id = ${userId};
+	        `;
+		dbClient.query(sql, function (err, rows) {
+			try {
+				if (rows[0].admin || rows.some(function (el) {return el.name == name}) || res.locals._admin.custom[name]) {
+					return next();
+				} else {
+					throw 'access-denied';
+				}
+			}
+			catch (err) {
+				req.session.error = res.locals.string[err];
+				res.redirect(res.locals.root+'/login');
+			}
+		})
+	} else if (req.session.user) {
+		return next()
+	} else {
+		req.session.error = res.locals.string['access-denied'];
+		res.redirect(res.locals.root+'/login');
+	}
 }
 
 exports.login = function (req, res) {

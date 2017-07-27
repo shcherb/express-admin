@@ -79,7 +79,7 @@ function initDatabase (args, done) {
                 if (err) return done(err);
                 // write back the settings
                 var fpath = path.join(args.dpath, 'settings.json'),
-                    updated = settings.refresh(args.settings, data);
+                    updated = settings.refresh(args.settings, data, client, done);
                 fs.writeFileSync(fpath, JSON.stringify(updated, null, 4), 'utf8');
 
                 args.settings = updated;

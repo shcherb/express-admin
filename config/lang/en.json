@@ -2,7 +2,7 @@
     "name"              : "English",
 
     "logo"              : "Express Admin",
-    
+
     "layout"            : "Layout",
     "centered"          : "Centered",
     "streched"          : "Streched",
@@ -10,9 +10,11 @@
     "language"          : "Language",
 
     "login"             : "Login",
+	"register"          : "Register",
     "logout"            : "Logout",
     "username"          : "Username",
     "password"          : "Password",
+	"retype_password"   : "Retype password",
     "access-denied"     : "Access denied!",
     "find-user"         : "Cannot find user!",
     "invalid-password"  : "Invalid password!",
@@ -22,7 +24,7 @@
     "tables"            : "Tables",
     "views"             : "Views",
     "others"            : "Others",
-    
+
     "select"            : "Select",
     "to-change"         : "to change",
     "filter"            : "Filter",

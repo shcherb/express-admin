@@ -2,7 +2,7 @@
     "name"              : "Русский",
 
     "logo"              : "Express Admin",
-    
+
     "layout"            : "Расположение",
     "centered"          : "По центру",
     "streched"          : "Растянуть",
@@ -10,9 +10,10 @@
     "language"          : "Язык",
 
     "login"             : "Вход",
-    "logout"            : "Выход",
+	"register"          : "Регистрация",
     "username"          : "Имя пользователя",
     "password"          : "Пароль",
+	"retype_password"   : "Повторите пароль",
     "access-denied"     : "Доступ запрещен!",
     "find-user"         : "Нет такого пользователя!",
     "invalid-password"  : "Неверный пароль!",
@@ -22,7 +23,7 @@
     "tables"            : "Таблицы",
     "views"             : "Views",
     "others"            : "Другое",
-    
+
     "select"            : "Выбор",
     "to-change"         : "для изменения",
     "filter"            : "Фильтр",
