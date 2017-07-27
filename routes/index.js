@@ -1,6 +1,7 @@
 
 exports.auth     = require('./auth' );
 exports.login    = require('./login');
+exports.signup   = require('./signup');
 exports.notfound = require('./404');
 
 exports.mainview = require('./mainview');

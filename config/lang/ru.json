@@ -10,7 +10,7 @@
     "language"          : "Язык",
 
     "login"             : "Вход",
-	"register"          : "Регистрация",
+	"signup"            : "Регистрация",
     "username"          : "Имя пользователя",
     "password"          : "Пароль",
 	"retype_password"   : "Повторите пароль",

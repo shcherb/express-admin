@@ -1,5 +1,7 @@
-
-var pwd = require('pwd');
+const bcrypt = require('bcrypt'),
+      Accounts = require('../models').Accounts,
+      passport = require('passport'),
+	  pwd = require('pwd');
 
 
 exports.status = function (req, res, next) {
@@ -21,7 +23,7 @@ exports.restrict = function (req, res, next) {
 		let name = res.locals._admin.slugs[req.params[0]];
 		if (!req.params[0] || !name) return next()
 		let dbClient = res.locals._admin.db.client,
-			userId = req.session.passport.user,
+			userId = req.session.passport.user.id,
 			sql = `
                 SELECT tables.name, tables.view, accounts.admin
 		        FROM tables INNER JOIN account_tables ON (tables.id = account_tables.table_id) LEFT JOIN accounts ON (account_tables.account_id = accounts.id)
@@ -37,14 +39,14 @@ exports.restrict = function (req, res, next) {
 			}
 			catch (err) {
 				req.session.error = res.locals.string[err];
-				res.redirect(res.locals.root);
+				res.redirect(res.locals.root+'/');
 			}
 		})
 	} else if (req.session.user) {
 		return next()
 	} else {
 		req.session.error = res.locals.string['access-denied'];
-		res.redirect(res.locals.root);
+		res.redirect(res.locals.root+'/login');
 	}
 }
 
@@ -84,8 +86,57 @@ exports.login = function (req, res) {
 exports.logout = function (req, res) {
     // destroy the user's session to log them out
     // will be re-created next request
-    req.session.destroy(function () {
+	req.logout();
+	req.session.destroy(function () {
         // successfully logged out
         res.redirect(res.locals.root+'/login');
+    });
+}
+
+module.exports.signup = function(req, res, next) {
+	let username = req.body.username,
+	    email = req.body.email,
+	    password = req.body.password,
+	    password2 = req.body.password2;
+
+	if (!username || !password || !password2) {
+		req.session.error = res.locals.string['all-fields'];
+		req.session.username = req.body.username;
+		res.redirect(res.locals.root+'/signup');
+		return;
+	}
+
+	if (password !== password2) {
+		req.session.error = res.locals.string['same-password'];
+		req.session.username = req.body.username;
+		res.redirect(res.locals.root+'/signup');
+		return;
+	}
+
+	let salt = bcrypt.genSaltSync(10);
+	let hashedPassword = bcrypt.hashSync(password, salt);
+
+	let newAccount = {
+		username: username,
+		email: email,
+		salt: salt,
+		password: hashedPassword
+	};
+
+	Accounts.create(newAccount)
+	.then(function() {
+		passport.authenticate('local')(req, res, () => {
+			req.session.save((err) => {
+                if (err) {
+			        return next(err);
+                };
+		        res.redirect('/');
+            })
+        })
+    })
+    .catch(function(error) {
+	    req.session.error = res.locals.string['different-username'];
+	    req.session.username = req.body.username;
+	    res.redirect(res.locals.root+'/signup');
     });
 }

@@ -30,6 +30,10 @@ var Xsql = require('xsql'),
     qb = require('./lib/qb'),
     dcopy = require('deep-copy');
 
+// passport authenticate
+const passport = require('passport'),
+      LocalStrategy = require('passport-local').Strategy,
+      Accounts = require('./models').Accounts;
 
 // creates project's config files
 function initCommandLine (args, cb) {
@@ -79,7 +83,7 @@ function initDatabase (args, done) {
                 if (err) return done(err);
                 // write back the settings
                 var fpath = path.join(args.dpath, 'settings.json'),
-                    updated = settings.refresh(args.settings, data, client, done);
+                    updated = settings.refresh(args.settings, data, client);
                 fs.writeFileSync(fpath, JSON.stringify(updated, null, 4), 'utf8');
 
                 args.settings = updated;
@@ -213,7 +217,15 @@ function initServer (args) {
                 dpath = path.resolve(__dirname, '../express-admin-static');
             }
             return dpath;
-        })()));
+        })()))
+
+		.use(passport.initialize())
+		.use(passport.session());
+
+    // passport config
+	passport.use(new LocalStrategy(Accounts.authenticate));
+	passport.serializeUser(Accounts.serializeUser);
+	passport.deserializeUser(Accounts.deserializeUser);
 
     if (!args.debug) app.set('view cache', true);
 
@@ -270,8 +282,19 @@ function initServer (args) {
 
     // login/logout
     app.get('/login', r.login.get, r.render.admin);
-    app.post('/login', r.auth.login);
+	app.get('/signup', r.signup.get, r.render.admin);
+	app.post('/signup', r.auth.signup);
+    //app.post('/login', r.auth.login);
     app.get('/logout', r.auth.logout);
+
+	app.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: false }), (req, res, next) => {
+		req.session.save((err) => {
+		    if (err) {
+		        return next(err);
+	        }
+	        res.redirect(res.locals.root+'/');
+        });
+    });
 
     // editview
     app.get(_routes.editview, r.auth.restrict, r.editview.get, r.render.admin);

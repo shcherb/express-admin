@@ -10,7 +10,7 @@
     "language"          : "Language",
 
     "login"             : "Login",
-	"register"          : "Register",
+	"signup"            : "Signup",
     "logout"            : "Logout",
     "username"          : "Username",
     "password"          : "Password",
@@ -18,6 +18,9 @@
     "access-denied"     : "Access denied!",
     "find-user"         : "Cannot find user!",
     "invalid-password"  : "Invalid password!",
+	"different-username": "Please, choose a different username.",
+	"all-fields"        : "Please, fill in all the fields.",
+	"same-password"     : "Please, enter the same password twice.",
 
     "home"              : "Home",
     "site-admin"        : "Site administration",

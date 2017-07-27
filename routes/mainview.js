@@ -3,15 +3,15 @@ exports.get = function (req, res, next) {
 	let settings = res.locals._admin.settings,
 		custom = res.locals._admin.custom,
 		dbClient = res.locals._admin.db.client,
-		userId = req.session.passport.user,
+		userId = req.session.passport.user.id,
 		isAdmin = false;
 
 	// check user access to table or view
 	let	sql = `
-            SELECT tables.name, tables.view, accounts.admin
-	FROM tables INNER JOIN account_tables ON (tables.id = account_tables.table_id) LEFT JOIN accounts ON (account_tables.account_id = accounts.id)
-	WHERE account_tables.account_id = ${userId};
-	    `;
+        SELECT tables.name, tables.view, accounts.admin
+        FROM tables INNER JOIN account_tables ON (tables.id = account_tables.table_id) LEFT JOIN accounts ON (account_tables.account_id = accounts.id)
+        WHERE account_tables.account_id = ${userId};
+    `;
 	dbClient.query(sql, function (err, rows) {
 		if (rows.length > 0) isAdmin = rows[0].admin;
 		var tables = [];
