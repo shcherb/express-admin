@@ -37,14 +37,14 @@ exports.restrict = function (req, res, next) {
 			}
 			catch (err) {
 				req.session.error = res.locals.string[err];
-				res.redirect(res.locals.root+'/login');
+				res.redirect(res.locals.root);
 			}
 		})
 	} else if (req.session.user) {
 		return next()
 	} else {
 		req.session.error = res.locals.string['access-denied'];
-		res.redirect(res.locals.root+'/login');
+		res.redirect(res.locals.root);
 	}
 }
 
