@@ -32,8 +32,9 @@ var Xsql = require('xsql'),
 
 // passport authenticate
 const passport = require('passport'),
-      LocalStrategy = require('passport-local').Strategy,
-      Accounts = require('./models').Accounts;
+      LocalStrategy = require('passport-local').Strategy;
+
+let client;
 
 // creates project's config files
 function initCommandLine (args, cb) {
@@ -53,7 +54,7 @@ function initCommandLine (args, cb) {
 // updates args.settings
 function initDatabase (args, done) {
     try {
-        var client = new Client(args.config);
+        client = new Client(args.config);
     } catch (err) {
         return done(err);
     }
@@ -223,6 +224,7 @@ function initServer (args) {
 		.use(passport.session());
 
     // passport config
+	const Accounts = require('./models').Accounts;
 	passport.use(new LocalStrategy(Accounts.authenticate));
 	passport.serializeUser(Accounts.serializeUser);
 	passport.deserializeUser(Accounts.deserializeUser);
@@ -345,6 +347,7 @@ if (require.main === module) {
 
 
 exports = module.exports = {
+	client: client,
     initCommandLine: initCommandLine,
     initDatabase: initDatabase,
     initSettings: initSettings,

@@ -4,11 +4,12 @@ const fs        = require('fs');
 const path      = require('path');
 const Sequelize = require('sequelize');
 const basename  = path.basename(module.filename);
-const config    = require(__dirname + '/../config/config.json')['pg'];
+//const config    = require(__dirname + '/../config/config.json')['pg'];
 const db        = {};
+const config = require('../app').client.config;
 
 const sequelize = new Sequelize(
-    `${config.dialect}://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}`
+    `postgres://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}`
     );
 
 Object.assign(sequelize.options, { logging: true });  // if 'logging' is true SQL query will shown
