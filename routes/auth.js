@@ -130,7 +130,7 @@ module.exports.signup = function(req, res, next) {
                 if (err) {
 			        return next(err);
                 };
-		        res.redirect('/');
+		        res.redirect(res.locals.root+'/');
             })
         })
     })
