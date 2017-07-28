@@ -4,9 +4,16 @@ const fs        = require('fs');
 const path      = require('path');
 const Sequelize = require('sequelize');
 const basename  = path.basename(module.filename);
-//const config    = require(__dirname + '/../config/config.json')['pg'];
 const db        = {};
-const config = require('../app').client.config;
+// temporary solutions for DB config
+let config = undefined;
+try {
+	config = require(__dirname + '/../app.js').client.config;
+}
+catch (err){
+	config = require(__dirname + '/../../../config.js')['DB'];
+	config["user"] = config.username;
+}
 
 const sequelize = new Sequelize(
     `postgres://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}`
