@@ -9,8 +9,8 @@ exports.get = function (req, res, next) {
 	// check user access to table or view
 	let	sql = `
         SELECT tables.name, tables.view, accounts.admin
-        FROM tables INNER JOIN account_tables ON (tables.id = account_tables.table_id) LEFT JOIN accounts ON (account_tables.account_id = accounts.id)
-        WHERE account_tables.account_id = ${userId};
+        FROM tables INNER JOIN account_tables ON (tables.id = account_tables.table_id) RIGHT JOIN accounts ON (account_tables.account_id = accounts.id)
+        WHERE accounts.id = ${userId};
     `;
 	dbClient.query(sql, function (err, rows) {
 		if (rows.length > 0) isAdmin = rows[0].admin;
