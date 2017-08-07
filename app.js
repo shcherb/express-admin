@@ -326,7 +326,7 @@ function initServer (args) {
     //app.post('/login', r.auth.login);
     app.get('/logout', r.auth.logout);
 
-	app.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: false }), (req, res, next) => {
+	app.post('/login', passport.authenticate('local', { failureRedirect: args.config.app.root+'/login', failureFlash: false }), (req, res, next) => {
 		req.session.save((err) => {
 		    if (err) {
 		        return next(err);
