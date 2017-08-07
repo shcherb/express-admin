@@ -45,7 +45,7 @@
         "express-admin-static": "2.2.2",
 		"passport"         : "0.3.2",
 		"passport-local"   : "1.0.0",
-		"bcrypt"           : "1.0.2",
+		"bcryptjs"         : "2.4.3",
 		"pg"               : "6.2.3"
 	},
     "devDependencies": {

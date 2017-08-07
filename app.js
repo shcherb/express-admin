@@ -33,7 +33,7 @@ var Xsql = require('xsql'),
 // passport authenticate
 const passport = require('passport'),
       LocalStrategy = require('passport-local').Strategy,
-      bcrypt = require('bcrypt');
+      bcrypt = require('bcryptjs');
 
 let client;
 
