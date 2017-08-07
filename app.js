@@ -32,7 +32,8 @@ var Xsql = require('xsql'),
 
 // passport authenticate
 const passport = require('passport'),
-      LocalStrategy = require('passport-local').Strategy;
+      LocalStrategy = require('passport-local').Strategy,
+      bcrypt = require('bcrypt');
 
 let client;
 
@@ -223,11 +224,47 @@ function initServer (args) {
 		.use(passport.initialize())
 		.use(passport.session());
 
+	testfunc = function(){
+		const dbClient = client;
+		return r.auth.authenticate;
+	}
     // passport config
-	const Accounts = require('./models').Accounts;
-	passport.use(new LocalStrategy(Accounts.authenticate));
-	passport.serializeUser(Accounts.serializeUser);
-	passport.deserializeUser(Accounts.deserializeUser);
+	passport.use(new LocalStrategy(function(username, password, done) {
+		const ///dbClient = res.locals._admin.db.client,
+			sql = {
+				text: 'SELECT * FROM accounts WHERE username = $1',
+				values: [username],
+			}
+
+		client.query(sql, function (err, user) {
+			if (user.length == 0) {
+				return done(null, false, { message: 'Incorrect credentials.' })
+			};
+
+			const hashedPassword = bcrypt.hashSync(password, user[0].salt);
+
+			if (user[0].password === hashedPassword) {
+				return done(null, user[0])
+			};
+
+			return done(null, false, { message: 'Incorrect credentials.' });
+		})
+	}));
+	passport.serializeUser(function(user, done) {
+		done(null, {id: user.id, username: user.username});
+	});
+	passport.deserializeUser(function(user, done) {
+		sql = {
+			text: "SELECT * FROM accounts WHERE id = $1",
+			values: [user.id]
+		};
+		client.query(sql, function (err, rows) {
+			if (rows.length == 0) {
+				done(new Error('Wrong user id.'))
+			};
+			done(null, rows[0]);
+		})
+	});
 
     if (!args.debug) app.set('view cache', true);
 

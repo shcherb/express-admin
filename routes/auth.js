@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt'),
-      Accounts = require('../models').Accounts,
       passport = require('passport'),
 	  pwd = require('pwd');
 
@@ -93,7 +92,7 @@ exports.logout = function (req, res) {
     });
 }
 
-module.exports.signup = function(req, res, next) {
+exports.signup = function(req, res, next) {
 	let username = req.body.username,
 	    email = req.body.email,
 	    password = req.body.password,
@@ -116,27 +115,75 @@ module.exports.signup = function(req, res, next) {
 	let salt = bcrypt.genSaltSync(10);
 	let hashedPassword = bcrypt.hashSync(password, salt);
 
-	let newAccount = {
-		username: username,
-		email: email,
-		salt: salt,
-		password: hashedPassword
-	};
+	const values = [
+		username,
+		email,
+		salt,
+		hashedPassword,
+		new Date(Date.now()).toISOString(),
+		new Date(Date.now()).toISOString()
+	];
 
-	Accounts.create(newAccount)
-	.then(function() {
+	const dbClient = res.locals._admin.db.client,
+		  sql = {
+			  text: "INSERT INTO accounts (username, email, password, salt, \"createdAt\", \"updatedAt\")\
+                             VALUES ($1, $2, $3, $4, $5, $6);",
+			  values: values
+		  };
+
+	dbClient.query(sql, function (err, rows) {
+		if (err){
+			req.session.error = res.locals.string['different-username'];
+			req.session.username = req.body.username;
+			res.redirect(res.locals.root+'/signup');
+		}
 		passport.authenticate('local')(req, res, () => {
 			req.session.save((err) => {
-                if (err) {
-			        return next(err);
-                };
+			    if (err) {
+		            return next(err);
+		        };
 		        res.redirect(res.locals.root+'/');
-            })
+	        })
         })
     })
-    .catch(function(error) {
-	    req.session.error = res.locals.string['different-username'];
-	    req.session.username = req.body.username;
-	    res.redirect(res.locals.root+'/signup');
-    });
 }
+
+//exports.serializeUser = function(user, done) {
+//	done(null, {id: user.id, username: user.username})
+//}
+//
+//exports.deserializeUser = function(user, done) {
+//	const dbClient = res.locals._admin.db.client,
+//		sql = {
+//			text: "SELECT * FROM accounts WHERE id = $1",
+//			values: [user.id]
+//		}
+//
+//	dbClient.query(sql, function (err, rows) {
+//		if (rows == null) {
+//			done(new Error('Wrong user id.'))
+//		};
+//		done(null, rows[0]);
+//	})
+//}
+//
+//exports.authenticate = function(username, password, done) {
+//	const ///dbClient = res.locals._admin.db.client,
+//		sql = "SELECT * FROM accounts WHERE username = $1",
+//		values = [username];
+//
+//	dbClient.query(sql, values, function (err, user) {
+//		if (user == null) {
+//			return done(null, false, { message: 'Incorrect credentials.' })
+//		};
+//
+//		const hashedPassword = bcrypt.hashSync(password, user.salt);
+//
+//		if (user.password === hashedPassword) {
+//			return done(null, user)
+//		};
+//
+//		return done(null, false, { message: 'Incorrect credentials.' });
+//	})
+//}
+//

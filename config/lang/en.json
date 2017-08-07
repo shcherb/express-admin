@@ -21,6 +21,7 @@
 	"different-username": "Please, choose a different username.",
 	"all-fields"        : "Please, fill in all the fields.",
 	"same-password"     : "Please, enter the same password twice.",
+	"user-notfound"     : "Username isn't found",
 
     "home"              : "Home",
     "site-admin"        : "Site administration",
