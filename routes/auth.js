@@ -118,8 +118,8 @@ exports.signup = function(req, res, next) {
 	const values = [
 		username,
 		email,
-		salt,
 		hashedPassword,
+		salt,
 		new Date(Date.now()).toISOString(),
 		new Date(Date.now()).toISOString()
 	];
