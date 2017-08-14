@@ -46,6 +46,19 @@
                 {{#mtm}}<span class="label label-default">{{.}}</span>{{/mtm}}
             </td>
         {{/values}}
+		{{#conversation}}
+			<td>
+				<iframe id="conversation_hystory"
+						height="300"
+						width="100%"
+						frameborder="0"
+						scrolling="yes"
+						marginheight="0"
+						marginwidth="0"
+						src="{{source}}">
+				</iframe>
+			</td>
+		{{/conversation}}
         </tr>
     {{/records}}
     </tbody>
