@@ -203,6 +203,8 @@ function initServer (args) {
         .use(logger('dev'))
         .use(bodyParser.json())
         .use(bodyParser.urlencoded({extended: true}))
+		.use(passport.initialize())
+		.use(passport.session())
         .use(multipart())
 
         .use(cookieParser())
@@ -220,10 +222,7 @@ function initServer (args) {
                 dpath = path.resolve(__dirname, '../express-admin-static');
             }
             return dpath;
-        })()))
-
-		.use(passport.initialize())
-		.use(passport.session());
+        })()));
 
 	testfunc = function(){
 		const dbClient = client;
