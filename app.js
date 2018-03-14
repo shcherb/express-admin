@@ -206,7 +206,8 @@ function initServer (args) {
         .use(multipart())
 
         .use(cookieParser())
-        .use(args.session || session({name: 'express-admin', secret: 'very secret - required', secure: true,
+        .use(args.session || session({name: 'express-admin', secret: 'very secret - required',
+			            cookie: { secure: true },
                         saveUninitialized: true, resave: true}))
         .use(r.auth.status)// session middleware
         .use(csrf())
