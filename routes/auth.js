@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs'),
       passport = require('passport'),
-	  pwd = require('pwd');
+	  pwd = require('pwd'),
+      render = require('./render');
+;
 
 
 exports.status = function (req, res, next) {
@@ -37,15 +39,21 @@ exports.restrict = function (req, res, next) {
 				}
 			}
 			catch (err) {
-				req.session.error = res.locals.string[err];
-				res.redirect(res.locals.root+'/');
+				res.locals.show.error = 'access-denied';
+				res.locals.partials = { content: 'login' };
+				render.admin(req, res);
+				// req.session.error = res.locals.string[err];
+				// res.redirect(res.locals.root+'/');
 			}
 		})
 	} else if (req.session.user) {
 		return next()
 	} else {
-		req.session.error = res.locals.string['access-denied'];
-		res.redirect(res.locals.root+'/login');
+		res.locals.show.error = 'access-denied';
+		res.locals.partials = { content: 'login' };
+		render.admin(req, res);
+		// req.session.error = res.locals.string['access-denied'];
+		// res.redirect(res.locals.root+'/login');
 	}
 }
 
