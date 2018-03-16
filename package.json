@@ -43,7 +43,7 @@
         "xsql"             : "1.0.1",
         "moment"           : "2.8.3",
         "express-admin-static": "2.2.2",
-		"passport"         : "0.3.2",
+		"passport"         : "0.4.0",
 		"passport-local"   : "1.0.0",
 		"bcryptjs"         : "2.4.3",
 		"pg"               : "6.2.3"
