@@ -94,10 +94,11 @@ exports.logout = function (req, res) {
     // destroy the user's session to log them out
     // will be re-created next request
 	req.logout();
-	req.session.destroy(function () {
-        // successfully logged out
-        res.redirect(res.locals.root+'/login');
-    });
+	res.redirect(res.locals.root+'/login');
+	// req.session.destroy(function () {
+   //      // successfully logged out
+   //      res.redirect(res.locals.root+'/login');
+   //  });
 }
 
 exports.signup = function(req, res, next) {

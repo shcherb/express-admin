@@ -12,6 +12,7 @@ var express = require('express'),
     multipart = require('connect-multiparty'),
     cookieParser = require('cookie-parser'),
     session = require('express-session'),
+	cookieSession = require('cookie-session'),
     csrf = require('csurf'),
     methodOverride = require('method-override'),
     serveStatic = require('serve-static'),
@@ -205,13 +206,17 @@ function initServer (args) {
         .use(bodyParser.urlencoded({extended: true}))
         .use(multipart())
 
-        .use(cookieParser())
-        .use(args.session || session({
-			name: 'express-admin',
+        .use(cookieParser('verySecretScepticBobcat'))
+        //.use(args.session || session({
+		.use(cookieSession({
+			name: 'expressAdmin',
 			secret: 'verySecretScepticBobcat',
-			cookie: { httpOnly: true, secure: true, maxAge: 1800000 },
-			saveUninitialized: true,
-			resave: true
+			cookie: { domain: 'https://statistics-t-mobile-stage.inforg.io',
+				      path: args.config.app.root,
+				      httpOnly: true,
+				      secure: true,
+				      signed: true,
+				      maxAge: 900000000 }
         }))
 		.use(csrf({ cookie: true }))
 		.use(passport.initialize())
@@ -330,14 +335,10 @@ function initServer (args) {
     //app.post('/login', r.auth.login);
     app.get('/logout', r.auth.logout);
 
-	app.post('/login', passport.authenticate('local', { failureRedirect: args.config.app.root+'/login', failureFlash: false }), (req, res, next) => {
-		req.session.save((err) => {
-		    if (err) {
-		        return next(err);
-	        }
-	        res.redirect(res.locals.root+'/');
-        });
-    });
+	app.post('/login', passport.authenticate( 'local', { session: true,
+		                                                 successRedirect: args.config.app.root,
+		                                                 failureRedirect: args.config.app.root+'/login',
+		                                                 failureFlash: false }));
 
     // editview
     app.get(_routes.editview, r.auth.restrict, r.editview.get, r.render.admin);
